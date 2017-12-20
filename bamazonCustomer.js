@@ -47,40 +47,40 @@ var toBuy = function() {
     .then(function(answer) {
      
       connection.query('SELECT * FROM products', function(err, res) {
-          if (err) throw err;
+      if (err) throw err;
 
-          if(res[answer.idNumber ].stock_quantity > answer.howMany) {
-            var newQuantity = parseInt(res[answer.idNumber - 1].stock_quantity) - parseInt(answer.howMany);
-            var total = parseFloat(answer.howMany) * parseFloat(res[answer.idNumber - 1].price);
-            total = total.toFixed(2);
+        if(res[answer.idNumber ].stock_quantity > answer.howMany) {
+          var newQuantity = parseInt(res[answer.idNumber - 1].stock_quantity) - parseInt(answer.howMany);
+          var total = parseFloat(answer.howMany) * parseFloat(res[answer.idNumber - 1].price);
+          total = total.toFixed(2);
 
-            var departmentTotal = parseFloat(total) + parseFloat(res[answer.itemNumber - 1] + answer.total_sales + answer.total_profit);
-            departmentTotal = departmentTotal.toFixed(2);
+          var departmentTotal = parseFloat(total) + parseFloat(res[answer.itemNumber - 1] + answer.total_sales + answer.total_profit);
+          departmentTotal = departmentTotal.toFixed(2);
 
-            connection.query("UPDATE departments SET ? WHERE ?", [{
-              total_sales: departmentTotal
-            }, {
-              department_name: res[answer.idNumber - 1].department_name
-            }], function(error, results) {});
+          connection.query("UPDATE departments SET ? WHERE ?", [{
+            total_sales: departmentTotal
+          }, {
+            department_name: res[answer.idNumber - 1].department_name
+          }], function(error, results) {});
 
-            connection.query("UPDATE products SET ? WHERE ?", [{
-              stock_quantity: newQuantity
-            }, {
-              item_id: answer.idNumber
-            }], function(error, results) {
-              if(error) throw error;
+          connection.query("UPDATE products SET ? WHERE ?", [{
+            stock_quantity: newQuantity
+          }, {
+            item_id: answer.idNumber
+          }], function(error, results) {
+            if(error) throw error;
 
-              console.log("Your order for " + answer.howMany + " " + res[answer.idNumber - 1].product_name +
-                "has been placed.");
-              console.log("Your total is $" + total);
-              somethingElse();
-            });
-
-          } else {
-            console.log("Insufficient quantity!")
-            console.log("We're sorry, we only have " + res[answer.idNumber - 1].stock_quantity + "of that product");
+            console.log("Your order for " + answer.howMany + " " + res[answer.idNumber - 1].product_name +
+              "has been placed.");
+            console.log("Your total is $" + total);
             somethingElse();
-          }     
+          });
+
+        } else {
+          console.log("Insufficient quantity!")
+          console.log("We're sorry, we only have " + res[answer.idNumber - 1].stock_quantity + "of that product");
+          somethingElse();
+        }     
       });
     }); 
   });
